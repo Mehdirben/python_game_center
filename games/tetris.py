@@ -47,6 +47,18 @@ class Tetris(BaseGame):
         self.master.bind('<space>', lambda e: self.drop())
 
     def play(self):
+        # Create instructions label
+        instructions = (
+            "Controls:\n"
+            "← → : Move left/right\n"
+            "↑ : Rotate\n"
+            "↓ : Move down\n"
+            "Space : Drop piece"
+        )
+        self.instructions_label = tk.Label(self.frame, text=instructions,
+                                         font=('Helvetica', 12), justify=tk.LEFT)
+        self.instructions_label.pack(pady=5)
+        
         # Create score label
         self.score_label = tk.Label(self.frame, text=f"Score: {self.score}",
                                   font=('Helvetica', 16))
@@ -202,6 +214,9 @@ class Tetris(BaseGame):
         
         if hasattr(self, 'restart_button'):
             self.restart_button.destroy()
+        
+        if hasattr(self, 'instructions_label'):
+            self.instructions_label.destroy()
         
         self.spawn_piece()
         self.display()
