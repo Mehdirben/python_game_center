@@ -3,6 +3,7 @@ from tkinter import ttk
 from games.tictactoe import TicTacToe
 from games.snake import Snake
 from games.game2048 import Game2048
+from games.tetris import Tetris
 
 class GameCenter:
     def __init__(self):
@@ -26,6 +27,11 @@ class GameCenter:
                 'class': Game2048,
                 'description': 'Merge numbers puzzle',
                 'icon': '🎲'
+            },
+            'Tetris': {
+                'class': Tetris,
+                'description': 'Classic block stacking game',
+                'icon': '🟦'
             }
         }
         
