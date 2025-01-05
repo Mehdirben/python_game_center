@@ -6,12 +6,14 @@ class Tetris(BaseGame):
     def __init__(self, master):
         super().__init__(master)
         self.master.title("Tetris")
+        self.master.resizable(False, False)  # Prevent window resizing
         self.cell_size = 30
         self.cols = 10
         self.rows = 20
         self.game_over_flag = False
         self.score = 0
         self.speed = 500
+        self.next_piece_shape = None  # Add this line after other initializations
         
         # Define tetromino shapes and colors
         self.shapes = {
@@ -47,6 +49,18 @@ class Tetris(BaseGame):
         self.master.bind('<space>', lambda e: self.drop())
 
     def play(self):
+        # Create container frame
+        self.container = tk.Frame(self.frame)
+        self.container.pack(expand=True, fill='both')
+        
+        # Create left frame for instructions
+        self.left_frame = tk.Frame(self.container)
+        self.left_frame.grid(row=0, column=0, padx=20, pady=20, sticky='n')
+        
+        # Create right frame for game
+        self.right_frame = tk.Frame(self.container)
+        self.right_frame.grid(row=0, column=1, padx=20, pady=20)
+
         # Create instructions label
         instructions = (
             "Controls:\n"
@@ -55,37 +69,89 @@ class Tetris(BaseGame):
             "↓ : Move down\n"
             "Space : Drop piece"
         )
-        self.instructions_label = tk.Label(self.frame, text=instructions,
+        self.instructions_label = tk.Label(self.left_frame, text=instructions,
                                          font=('Helvetica', 12), justify=tk.LEFT)
         self.instructions_label.pack(pady=5)
         
         # Create score label
-        self.score_label = tk.Label(self.frame, text=f"Score: {self.score}",
+        self.score_label = tk.Label(self.left_frame, text=f"Score: {self.score}",
                                   font=('Helvetica', 16))
         self.score_label.pack(pady=10)
         
+        # Create next piece preview canvas (add after score label)
+        preview_size = self.cell_size * 4
+        self.preview_label = tk.Label(self.left_frame, text="Next Piece:",
+                                    font=('Helvetica', 12))
+        self.preview_label.pack(pady=(20,5))
+        self.preview_canvas = tk.Canvas(
+            self.left_frame,
+            width=preview_size,
+            height=preview_size,
+            bg='black'
+        )
+        self.preview_canvas.pack(pady=5)
+
         # Create canvas
         self.canvas = tk.Canvas(
-            self.frame,
+            self.right_frame,
             width=self.cell_size * self.cols,
             height=self.cell_size * self.rows,
             bg='black'
         )
         self.canvas.pack(padx=10, pady=10)
         
+        # Initialize first next piece before starting the game
+        self.next_piece_shape = random.choice(list(self.shapes.keys()))
+        self.display_next_piece()
+        
         self.spawn_piece()
         self.update()
 
     def spawn_piece(self):
-        self.current_shape = random.choice(list(self.shapes.keys()))
-        shape = self.shapes[self.current_shape]
-        self.current_piece = [(x, y) for x, y in shape]
+        if self.next_piece_shape is None:
+            self.next_piece_shape = random.choice(list(self.shapes.keys()))
+        
+        self.current_shape = self.next_piece_shape
+        self.current_piece = [(x, y) for x, y in self.shapes[self.current_shape]]
         self.current_pos = [0, self.cols//2 - 2]
+        
+        # Generate next piece
+        self.next_piece_shape = random.choice(list(self.shapes.keys()))
+        self.display_next_piece()
         
         if not self.is_valid_move(0, 0):
             self.game_over()
             return False
         return True
+
+    def display_next_piece(self):
+        self.preview_canvas.delete('all')
+        next_shape = self.shapes[self.next_piece_shape]
+        
+        # Calculate bounding box of the piece
+        min_x = min(y for _, y in next_shape)
+        max_x = max(y for _, y in next_shape)
+        min_y = min(x for x, _ in next_shape)
+        max_y = max(x for x, _ in next_shape)
+        width = max_x - min_x + 1
+        height = max_y - min_y + 1
+        
+        # Calculate scaling and offset
+        cell_size = min(self.preview_canvas.winfo_width() / (width + 2),
+                       self.preview_canvas.winfo_height() / (height + 2))
+        offset_x = (self.preview_canvas.winfo_width() - width * cell_size) / 2
+        offset_y = (self.preview_canvas.winfo_height() - height * cell_size) / 2
+        
+        # Draw piece
+        for x, y in next_shape:
+            self.preview_canvas.create_rectangle(
+                offset_x + (y - min_x) * cell_size,
+                offset_y + (x - min_y) * cell_size,
+                offset_x + (y - min_x + 1) * cell_size,
+                offset_y + (x - min_y + 1) * cell_size,
+                fill=self.colors[self.next_piece_shape],
+                outline='gray'
+            )
 
     def move(self, dx, dy):
         if not self.game_over_flag and self.is_valid_move(dy, dx):
@@ -199,7 +265,7 @@ class Tetris(BaseGame):
         
         # Add restart button
         self.restart_button = tk.Button(
-            self.frame,
+            self.left_frame,  # Changed from self.frame to self.left_frame
             text="Restart Game",
             font=('Helvetica', 12),
             command=self.restart
@@ -218,6 +284,7 @@ class Tetris(BaseGame):
         if hasattr(self, 'instructions_label'):
             self.instructions_label.destroy()
         
+        self.next_piece_shape = None  # Add this line before spawn_piece
         self.spawn_piece()
         self.display()
         self.update()
