@@ -111,6 +111,8 @@ class GameCenter:
 
     def start_game(self, game_class):
         game_window = tk.Toplevel(self.root)
+        game_window.focus_force()  # Force focus to the new window
+        game_window.lift()         # Bring window to front
         game = game_class(game_window)
         game.play()
 

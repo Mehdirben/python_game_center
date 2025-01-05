@@ -16,6 +16,7 @@ class Snake(BaseGame):
         self.food = None
         self.score = 0
         self.game_over_flag = False
+        self.restart_button = None
         
         # Bind keys
         self.master.bind('<Left>', lambda e: self.change_direction('Left'))
@@ -107,11 +108,41 @@ class Snake(BaseGame):
     def game_over(self):
         self.game_over_flag = True
         self.canvas.create_text(
-            self.canvas_size//2, self.canvas_size//2,
+            self.canvas_size//2, self.canvas_size//2 - 20,
             text=f"Game Over!\nScore: {self.score}",
             fill='white', font=('Helvetica', 24),
             justify=tk.CENTER
         )
+        
+        # Add restart button
+        self.restart_button = tk.Button(
+            self.frame,
+            text="Restart Game",
+            font=('Helvetica', 12),
+            command=self.restart
+        )
+        self.restart_button.pack(pady=10)
+
+    def restart(self):
+        # Reset game state
+        self.snake = [(5, 5)]
+        self.direction = 'Right'
+        self.food = None
+        self.score = 0
+        self.game_over_flag = False
+        
+        # Update score display
+        self.score_label.config(text=f"Score: {self.score}")
+        
+        # Remove restart button if it exists
+        if self.restart_button:
+            self.restart_button.destroy()
+            self.restart_button = None
+            
+        # Clear canvas and restart game
+        self.canvas.delete('all')
+        self.spawn_food()
+        self.update()
 
     def is_game_over(self):
         return self.game_over_flag

@@ -21,3 +21,7 @@ class BaseGame(ABC):
     def is_game_over(self):
         """Check if the game is over"""
         pass
+
+    def restart(self):
+        """Reset the game state to start a new game"""
+        pass
