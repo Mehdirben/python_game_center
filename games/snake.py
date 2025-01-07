@@ -34,6 +34,10 @@ class Snake(BaseGame):
         # Update frame background to match theme
         self.frame.configure(bg=self.colors['bg'])
         
+        # Create a container frame for centering
+        self.center_frame = tk.Frame(self.frame, bg=self.colors['bg'])
+        self.center_frame.pack(expand=True, fill='both')
+        
         # Initialize game state
         self.snake = [(5, 5)]
         self.direction = 'Right'
@@ -49,11 +53,18 @@ class Snake(BaseGame):
         self.master.bind('<Down>', lambda e: self.change_direction('Down'))
 
     def play(self):
+        # Create a frame to hold the game elements
+        self.game_frame = tk.Frame(
+            self.center_frame,
+            bg=self.colors['bg']
+        )
+        self.game_frame.place(relx=0.5, rely=0.5, anchor='center')
+        
         # Create canvas with modern background
         self.canvas = tk.Canvas(
-            self.frame, 
-            width=self.canvas_size, 
-            height=self.canvas_size, 
+            self.game_frame,  # Changed from self.frame to self.game_frame
+            width=self.canvas_size,
+            height=self.canvas_size,
             bg=self.colors['bg'],
             highlightthickness=0
         )
@@ -61,7 +72,7 @@ class Snake(BaseGame):
         
         # Modern score label with themed background
         self.score_label = tk.Label(
-            self.frame,
+            self.game_frame,  # Changed from self.frame to self.game_frame
             text=f"Score: {self.score}",
             font=('Helvetica', 16, 'bold'),
             fg=self.colors['text'],
@@ -206,7 +217,7 @@ class Snake(BaseGame):
         
         # Modern restart button with updated colors
         self.restart_button = tk.Button(
-            self.frame,
+            self.game_frame,  # Changed from self.frame to self.game_frame
             text="Restart Game",
             font=('Helvetica', 12, 'bold'),
             fg=self.colors['text'],
