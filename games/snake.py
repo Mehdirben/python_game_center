@@ -10,6 +10,26 @@ class Snake(BaseGame):
         self.cell_size = 20
         self.speed = 100
         
+        # Modern color scheme
+        self.colors = {
+            'bg': '#1E1E2E',
+            'snake_head': '#50FA7B',
+            'snake_body': '#43B466',
+            'food': '#FF5555',
+            'grid': '#2A2A3C',
+            'text': '#F8F8F2'
+        }
+        
+        # Center the window and set theme
+        screen_width = self.master.winfo_screenwidth()
+        screen_height = self.master.winfo_screenheight()
+        window_width = self.canvas_size + 40
+        window_height = self.canvas_size + 100
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.master.geometry(f'{window_width}x{window_height}+{x}+{y}')
+        self.master.configure(bg=self.colors['bg'])
+        
         # Initialize game state
         self.snake = [(5, 5)]
         self.direction = 'Right'
@@ -25,15 +45,36 @@ class Snake(BaseGame):
         self.master.bind('<Down>', lambda e: self.change_direction('Down'))
 
     def play(self):
-        # Create canvas
-        self.canvas = tk.Canvas(self.frame, width=self.canvas_size, 
-                              height=self.canvas_size, bg='black')
-        self.canvas.pack(padx=10, pady=10)
+        # Create canvas with modern background
+        self.canvas = tk.Canvas(
+            self.frame, 
+            width=self.canvas_size, 
+            height=self.canvas_size, 
+            bg=self.colors['bg'],
+            highlightthickness=0
+        )
+        self.canvas.pack(padx=20, pady=20)
         
-        # Create score label
-        self.score_label = tk.Label(self.frame, text=f"Score: {self.score}",
-                                  font=('Helvetica', 16))
+        # Modern score label
+        self.score_label = tk.Label(
+            self.frame,
+            text=f"Score: {self.score}",
+            font=('Helvetica', 16, 'bold'),
+            fg=self.colors['text'],
+            bg=self.colors['bg']
+        )
         self.score_label.pack()
+        
+        # Draw grid lines
+        for i in range(0, self.canvas_size, self.cell_size):
+            self.canvas.create_line(
+                i, 0, i, self.canvas_size,
+                fill=self.colors['grid'], width=1
+            )
+            self.canvas.create_line(
+                0, i, self.canvas_size, i,
+                fill=self.colors['grid'], width=1
+            )
         
         self.spawn_food()
         self.update()
@@ -87,38 +128,91 @@ class Snake(BaseGame):
     def display(self):
         self.canvas.delete('all')
         
-        # Draw snake
-        for segment in self.snake:
-            x, y = segment
-            self.canvas.create_rectangle(
-                x * self.cell_size, y * self.cell_size,
-                (x + 1) * self.cell_size, (y + 1) * self.cell_size,
-                fill='green', outline='darkgreen'
+        # Draw grid
+        for i in range(0, self.canvas_size, self.cell_size):
+            self.canvas.create_line(
+                i, 0, i, self.canvas_size,
+                fill=self.colors['grid'], width=1
+            )
+            self.canvas.create_line(
+                0, i, self.canvas_size, i,
+                fill=self.colors['grid'], width=1
             )
         
-        # Draw food
+        # Draw snake with rounded corners
+        for i, segment in enumerate(self.snake):
+            x, y = segment
+            color = self.colors['snake_head'] if i == 0 else self.colors['snake_body']
+            
+            # Create rounded rectangle
+            x1 = x * self.cell_size + 2
+            y1 = y * self.cell_size + 2
+            x2 = (x + 1) * self.cell_size - 2
+            y2 = (y + 1) * self.cell_size - 2
+            
+            self.canvas.create_oval(
+                x1, y1, x2, y2,
+                fill=color, outline=''
+            )
+        
+        # Draw modern food
         if self.food:
             x, y = self.food
+            x1 = x * self.cell_size + 2
+            y1 = y * self.cell_size + 2
+            x2 = (x + 1) * self.cell_size - 2
+            y2 = (y + 1) * self.cell_size - 2
+            
+            # Create star-like shape for food
+            center_x = (x1 + x2) / 2
+            center_y = (y1 + y2) / 2
+            size = self.cell_size * 0.4
+            
             self.canvas.create_oval(
-                x * self.cell_size, y * self.cell_size,
-                (x + 1) * self.cell_size, (y + 1) * self.cell_size,
-                fill='red'
+                center_x - size, center_y - size,
+                center_x + size, center_y + size,
+                fill=self.colors['food'],
+                outline='white',
+                width=2
             )
 
     def game_over(self):
         self.game_over_flag = True
+        
+        # Semi-transparent overlay
+        self.canvas.create_rectangle(
+            0, 0, self.canvas_size, self.canvas_size,
+            fill='black', stipple='gray50'
+        )
+        
+        # Game over text with shadow
+        self.canvas.create_text(
+            self.canvas_size//2 + 2, self.canvas_size//2 - 18,
+            text=f"Game Over!\nScore: {self.score}",
+            fill='black', font=('Helvetica', 24, 'bold'),
+            justify=tk.CENTER
+        )
         self.canvas.create_text(
             self.canvas_size//2, self.canvas_size//2 - 20,
             text=f"Game Over!\nScore: {self.score}",
-            fill='white', font=('Helvetica', 24),
+            fill=self.colors['text'],
+            font=('Helvetica', 24, 'bold'),
             justify=tk.CENTER
         )
         
-        # Add restart button
+        # Modern restart button
         self.restart_button = tk.Button(
             self.frame,
             text="Restart Game",
-            font=('Helvetica', 12),
+            font=('Helvetica', 12, 'bold'),
+            fg='white',
+            bg=self.colors['snake_head'],
+            activebackground=self.colors['snake_body'],
+            activeforeground='white',
+            bd=0,
+            padx=20,
+            pady=10,
+            cursor='hand2',
             command=self.restart
         )
         self.restart_button.pack(pady=10)
