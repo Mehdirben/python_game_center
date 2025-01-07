@@ -24,11 +24,15 @@ class Snake(BaseGame):
         screen_width = self.master.winfo_screenwidth()
         screen_height = self.master.winfo_screenheight()
         window_width = self.canvas_size + 40
-        window_height = self.canvas_size + 100
+        window_height = self.canvas_size + 150  # Increased from 100 to 150 for better button visibility
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
         self.master.geometry(f'{window_width}x{window_height}+{x}+{y}')
+        self.master.minsize(window_width, window_height)  # Add minimum size constraint
         self.master.configure(bg=self.colors['bg'])
+        
+        # Update frame background to match theme
+        self.frame.configure(bg=self.colors['bg'])
         
         # Initialize game state
         self.snake = [(5, 5)]
@@ -55,7 +59,7 @@ class Snake(BaseGame):
         )
         self.canvas.pack(padx=20, pady=20)
         
-        # Modern score label
+        # Modern score label with themed background
         self.score_label = tk.Label(
             self.frame,
             text=f"Score: {self.score}",
@@ -200,15 +204,15 @@ class Snake(BaseGame):
             justify=tk.CENTER
         )
         
-        # Modern restart button
+        # Modern restart button with updated colors
         self.restart_button = tk.Button(
             self.frame,
             text="Restart Game",
             font=('Helvetica', 12, 'bold'),
-            fg='white',
-            bg=self.colors['snake_head'],
-            activebackground=self.colors['snake_body'],
-            activeforeground='white',
+            fg=self.colors['text'],
+            bg=self.colors['grid'],  # Using grid color for button
+            activebackground=self.colors['snake_head'],
+            activeforeground=self.colors['text'],
             bd=0,
             padx=20,
             pady=10,
