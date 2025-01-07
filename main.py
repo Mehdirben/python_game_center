@@ -3,7 +3,6 @@ from tkinter import ttk
 from games.tictactoe import TicTacToe
 from games.snake import Snake
 from games.game2048 import Game2048
-from games.tetris import Tetris
 
 class GameCenter:
     def __init__(self):
@@ -29,11 +28,6 @@ class GameCenter:
                 'class': Game2048,
                 'description': 'Merge numbers puzzle',
                 'icon': '🎲'
-            },
-            'Tetris': {
-                'class': Tetris,
-                'description': 'Classic block stacking game',
-                'icon': '🟦'
             }
         }
         
@@ -142,13 +136,14 @@ class GameCenter:
             
             # Grid positioning
             col += 1
-            if col > 1:
+            if col > 2:
                 col = 0
                 row += 1
             
             # Make columns and rows expand equally
             container.grid_columnconfigure(0, weight=1)
             container.grid_columnconfigure(1, weight=1)
+            container.grid_columnconfigure(2, weight=1)
         
         # Quit button
         quit_btn = ttk.Button(self.root, text="Exit Game Center",
