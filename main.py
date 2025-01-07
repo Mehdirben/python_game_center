@@ -9,8 +9,10 @@ class GameCenter:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Python Game Center")
-        self.root.geometry("800x600")
-        self.root.configure(bg='#1e1e2f')  # Dark background for modern look
+        self.root.state('zoomed')  # This makes the window maximized but not fullscreen
+        self.root.configure(bg='#1e1e2f')
+        
+        self.center_window(self.root)
         
         self.games = {
             'Tic Tac Toe': {
@@ -37,6 +39,16 @@ class GameCenter:
         
         self.setup_styles()
         self.create_widgets()
+
+    def center_window(self, window):
+        window.update_idletasks()
+        width = window.winfo_width()
+        height = window.winfo_height()
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        window.geometry(f'+{x}+{y}')
 
     def setup_styles(self):
         style = ttk.Style()
@@ -149,6 +161,7 @@ class GameCenter:
         game_window.focus_force()  # Force focus to the new window
         game_window.lift()         # Bring window to front
         game = game_class(game_window)
+        self.center_window(game_window)  # Center the game window
         game.play()
 
     def run(self):

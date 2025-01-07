@@ -9,6 +9,16 @@ class Game2048(BaseGame):
         self.grid_size = 4
         self.cell_size = 100
         self.padding = 10
+        
+        # Center the window
+        window_width = self.cell_size * self.grid_size + self.padding * (self.grid_size + 1) + 20
+        window_height = window_width + 100  # Extra space for score
+        screen_width = self.master.winfo_screenwidth()
+        screen_height = self.master.winfo_screenheight()
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.master.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        
         self.grid = [[0] * self.grid_size for _ in range(self.grid_size)]
         self.score = 0
         self.game_over_flag = False
