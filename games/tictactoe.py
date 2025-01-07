@@ -6,9 +6,22 @@ class TicTacToe(BaseGame):
     def __init__(self, master):
         super().__init__(master)
         self.master.title("Tic Tac Toe")
-        # Center the window
-        window_width = 300
-        window_height = 400
+        # Modern color scheme
+        self.colors = {
+            'bg': '#1e1e2f',
+            'button': '#2a2a40',
+            'button_hover': '#3a3a5c',
+            'x_color': '#00bcd4',
+            'o_color': '#ff4081',
+            'text': '#ffffff',
+            'win': '#4caf50',
+            'tie': '#ffd700'
+        }
+        
+        self.master.configure(bg=self.colors['bg'])
+        # Center window
+        window_width = 400
+        window_height = 500
         screen_width = self.master.winfo_screenwidth()
         screen_height = self.master.winfo_screenheight()
         x = (screen_width - window_width) // 2
@@ -24,56 +37,91 @@ class TicTacToe(BaseGame):
         self.game_active = True
 
     def play(self):
-        self.frame.pack_forget()  # Clear any existing widgets
-        self.frame = tk.Frame(self.master)
+        self.frame.pack_forget()
+        self.frame = tk.Frame(self.master, bg=self.colors['bg'])
         self.frame.pack(expand=True, padx=20, pady=20)
 
-        # Status label
-        self.status = tk.Label(self.frame, text=f"Player {self.current_player}'s turn",
-                             font=('Helvetica', 14))
-        self.status.pack(pady=10)
+        # Status label with modern font and colors
+        self.status = tk.Label(self.frame, 
+                             text=f"Player {self.current_player}'s turn",
+                             font=('Helvetica Neue', 16, 'bold'),
+                             bg=self.colors['bg'],
+                             fg=self.colors['text'])
+        self.status.pack(pady=20)
 
         # Game board
-        board_frame = tk.Frame(self.frame)
+        board_frame = tk.Frame(self.frame, bg=self.colors['bg'])
         board_frame.pack()
 
         for i in range(3):
             for j in range(3):
                 self.buttons[i][j] = tk.Button(board_frame, text='',
-                                             font=('Helvetica', 24, 'bold'),
+                                             font=('Helvetica Neue', 28, 'bold'),
                                              width=3, height=1,
+                                             bg=self.colors['button'],
+                                             fg=self.colors['text'],
+                                             activebackground=self.colors['button_hover'],
+                                             activeforeground=self.colors['text'],
+                                             relief='flat',
+                                             borderwidth=0,
                                              command=lambda row=i, col=j: self.make_move(row, col))
-                self.buttons[i][j].grid(row=i, column=j, padx=2, pady=2)
+                self.buttons[i][j].grid(row=i, column=j, padx=4, pady=4)
+                
+                # Bind hover events
+                self.buttons[i][j].bind('<Enter>', 
+                    lambda e, btn=self.buttons[i][j]: btn.configure(bg=self.colors['button_hover']))
+                self.buttons[i][j].bind('<Leave>', 
+                    lambda e, btn=self.buttons[i][j]: btn.configure(bg=self.colors['button']))
 
-        # Restart button
-        self.restart_button = ttk.Button(self.frame, text="Restart Game",
-                                       command=self.restart_game)
-        self.restart_button.pack(pady=20)
+        # Modern restart button
+        self.restart_button = tk.Button(self.frame, 
+                                      text="Restart Game",
+                                      font=('Helvetica Neue', 12, 'bold'),
+                                      bg=self.colors['button'],
+                                      fg=self.colors['text'],
+                                      activebackground=self.colors['button_hover'],
+                                      activeforeground=self.colors['text'],
+                                      relief='flat',
+                                      borderwidth=0,
+                                      padx=20,
+                                      pady=10,
+                                      command=self.restart_game)
+        self.restart_button.pack(pady=30)
+        
+        # Bind hover events for restart button
+        self.restart_button.bind('<Enter>', 
+            lambda e: self.restart_button.configure(bg=self.colors['button_hover']))
+        self.restart_button.bind('<Leave>', 
+            lambda e: self.restart_button.configure(bg=self.colors['button']))
 
     def make_move(self, row, col):
         if self.board[row][col] == ' ' and self.game_active:
             self.board[row][col] = self.current_player
-            self.buttons[row][col].config(text=self.current_player,
-                                        fg='blue' if self.current_player == 'X' else 'red')
+            color = self.colors['x_color'] if self.current_player == 'X' else self.colors['o_color']
+            self.buttons[row][col].configure(text=self.current_player,
+                                           fg=color,
+                                           bg=self.colors['button'])
             
             if self.check_winner():
                 self.game_active = False
-                self.status.config(text=f"Player {self.current_player} wins!",
-                                 fg='green')
+                self.status.configure(text=f"Player {self.current_player} wins!",
+                                    fg=self.colors['win'])
                 self.highlight_winner()
             elif self.is_game_over():
                 self.game_active = False
-                self.status.config(text="It's a tie!")
+                self.status.configure(text="It's a tie!",
+                                    fg=self.colors['tie'])
             else:
                 self.current_player = 'O' if self.current_player == 'X' else 'X'
-                self.status.config(text=f"Player {self.current_player}'s turn")
+                color = self.colors['x_color'] if self.current_player == 'X' else self.colors['o_color']
+                self.status.configure(text=f"Player {self.current_player}'s turn",
+                                    fg=color)
 
     def highlight_winner(self):
-        # Highlight the winning combination
         winning_combo = self.get_winning_combination()
         if winning_combo:
             for row, col in winning_combo:
-                self.buttons[row][col].config(bg='lightgreen')
+                self.buttons[row][col].configure(bg=self.colors['win'])
 
     def get_winning_combination(self):
         # Check rows
