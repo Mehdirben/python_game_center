@@ -7,7 +7,7 @@ from games.game2048 import Game2048
 class GameCenter:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Python Game Center")
+        self.root.title("Retro GameHub")
         self.root.state('zoomed')  # This makes the window maximized but not fullscreen
         self.root.configure(bg='#1e1e2f')
         
