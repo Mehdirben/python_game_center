@@ -7,7 +7,7 @@ from games.game2048 import Game2048
 class GameCenter:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Retro GameHub")
+        self.root.title("Retro Gamehub")
         self.root.state('zoomed')  # This makes the window maximized but not fullscreen
         self.root.configure(bg='#1e1e2f')
         
@@ -101,7 +101,7 @@ class GameCenter:
 
     def create_widgets(self):
         # Title
-        title = ttk.Label(self.root, text="Python Game Center", style='Title.TLabel')
+        title = ttk.Label(self.root, text="Retro Gamehub", style='Title.TLabel')
         title.pack(pady=30)
         
         # Games container
