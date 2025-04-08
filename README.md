@@ -2,7 +2,7 @@
 
 A modern collection of classic games built with Python and Tkinter, featuring a sleek dark theme interface.
 
-![Python Game Center](screenshots/game_center.png)
+![Python Game Center](screenshots/home.png)
 
 ## 🎯 Features
 
