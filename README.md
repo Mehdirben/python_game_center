@@ -89,7 +89,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <summary>Click to expand</summary>
 
 ![2048 Game](screenshots/2048.png)
-![Tic Tac Toe](screenshots/tictactoe.png)
+![Tic Tac Toe](screenshots/xo.png)
 ![Snake Game](screenshots/snake.png)
 
 </details>
